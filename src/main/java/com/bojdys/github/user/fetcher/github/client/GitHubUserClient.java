@@ -21,7 +21,7 @@ public class GitHubUserClient {
 
     public List<GitHubRepository> getUserRepositories(String username){
         try {
-            ResponseEntity <GitHubRepository[]> repos = restTemplate.getForEntity("https://api.github.com/users/" + username + "/repos", GitHubRepository[].class);
+            ResponseEntity<GitHubRepository[]> repos = restTemplate.getForEntity("https://api.github.com/users/" + username + "/repos", GitHubRepository[].class);
             return Arrays.asList(repos.getBody());
         }
         catch (HttpClientErrorException e) {
