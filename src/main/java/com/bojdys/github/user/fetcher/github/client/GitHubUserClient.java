@@ -32,4 +32,10 @@ public class GitHubUserClient {
         }
     }
 
+    public List<GitHubBranch> getRepoBranches(String username, String repoName){
+        String url = "https://api.github.com/repos/" + username + "/" + repoName + "/branches";
+        GitHubBranch[] branches = restTemplate.getForObject(url, GitHubBranch[].class);
+        return Arrays.asList(branches);
+    }
+
 }

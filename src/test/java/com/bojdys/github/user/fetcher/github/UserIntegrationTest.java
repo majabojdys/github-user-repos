@@ -21,8 +21,11 @@ public class UserIntegrationTest extends IntegrationTest {
     public void getUserReposSuccessIntegrationTest() {
         //given
         String username = "majabojdys";
-        String githubUrl = "https://api.github.com/users/" + username + "/repos";
-        String gitHubResponse = """
+        String repoName = "repo1";
+        String githubRepoUrl = "https://api.github.com/users/" + username + "/repos";
+        String githubBranchUrl = "https://api.github.com/repos/" + username + "/" + repoName + "/branches";
+
+        String githubRepoResponse = """
                 [
                     {
                         "name": "repo1",
@@ -33,9 +36,24 @@ public class UserIntegrationTest extends IntegrationTest {
                    }
                 ]
                 """;
-        mockServer.expect(requestTo(githubUrl))
+        mockServer.expect(requestTo(githubRepoUrl))
                 .andExpect(method(HttpMethod.GET))
-                .andRespond(withSuccess(gitHubResponse, MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess(githubRepoResponse, MediaType.APPLICATION_JSON));
+
+
+        String githubBranchResponse = """
+                [
+                    {
+                        "name": "main",
+                        "commit": {
+                            "sha": "xyz"
+                        }
+                   }
+                ]
+                """;
+        mockServer.expect(requestTo(githubBranchUrl))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withSuccess(githubBranchResponse, MediaType.APPLICATION_JSON));
 
         //when
         ResponseEntity<RepositoryDtoResponse[]> result = testRestTemplate.getForEntity(getLocalhost() + "/users/" + username, RepositoryDtoResponse[].class);
@@ -47,6 +65,8 @@ public class UserIntegrationTest extends IntegrationTest {
         Assertions.assertEquals(1, resultBody.length);
         Assertions.assertEquals(username, resultBody[0].getOwnerLogin());
         Assertions.assertEquals("repo1", resultBody[0].getRepositoryName());
+        Assertions.assertEquals("main", resultBody[0].getBranches().get(0).getName());
+        Assertions.assertEquals("xyz", resultBody[0].getBranches().get(0).getSha());
     }
 
     @Test
