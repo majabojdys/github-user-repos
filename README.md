@@ -1,0 +1,1 @@
+This application fetches all non-fork repositories for a given GitHub username and lists each repository's branches mith the last commit SHA.
